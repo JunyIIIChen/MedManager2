@@ -1,0 +1,208 @@
+﻿@model IEnumerable<MedManager.Models.Appointment>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+
+<table class="table" id="dataTables">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Clinic.ClinicName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StartTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EndTime)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Clinic.ClinicName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.StartTime)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EndTime)
+                </td>
+                <td>
+                    @Html.ActionLink("Details", "Details", new { id = item.Id }) |
+                    @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+
+                </td>
+            </tr>
+        }
+    </tbody>
+
+    @if (User.IsInRole("admin"))
+    {
+        <div style="width: 75%;">
+            <button id="ChartType">Change Chart Type</button>
+            <canvas id="appointmentBarChart"></canvas>
+        </div>
+
+        <div>
+            <br>
+            <button id="exportJSON">Export as JSON</button>
+            <button id="exportTxt">Export as TXT</button>
+            <button id="exportCSV">Export as CSV</button>
+        </div>
+    }
+
+</table>
+
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/dataTables")
+@section scripts{
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        let table = new DataTable('#dataTables');
+
+        $(document).ready(function () {
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            let chartInstance; // Store the chart instance to update later
+            let currentChartType = 'bar'; // Default chart type
+
+            // Function to render the chart
+            function renderChart(data) {
+                // Using monthNames to replace month numbers
+                const months = data.map(item => monthNames[item.Month - 1]);
+                const counts = data.map(item => item.Count);
+
+                if (chartInstance) {
+                    chartInstance.destroy(); // Destroy previous chart if any
+                }
+
+                chartInstance = new Chart(document.getElementById("appointmentBarChart"), {
+                    type: currentChartType,
+                    data: {
+                        labels: months,
+                        datasets: [
+                            {
+                                label: "Number of Appointments",
+                                data: counts,
+                                backgroundColor: currentChartType === 'bar' ? 'rgba(75, 192, 192, 0.2)' : ['rgba(255, 99, 132, 0.2)', 'rgba(255, 159, 64, 0.2)', 'rgba(255, 205, 86, 0.2)', 'rgba(75, 192, 192, 0.2)', 'rgba(54, 162, 235, 0.2)', 'rgba(153, 102, 255, 0.2)', 'rgba(201, 203, 207, 0.2)'],
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                borderWidth: 1
+                            }
+                        ]
+                    },
+                    options:
+                    {
+                        scales:
+                        {
+                            y:
+                            {
+                                beginAtZero: true,
+                                ticks:
+                                {
+                                    stepSize: 1,
+                                    precision: 0
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Fetch data and render bar chart by default
+            $.ajax({
+                url: "/Appointments/GetMonthlyAppointmentsCount",
+                method: 'GET',
+                success: function (data) {
+                    renderChart(data);
+                }
+            });
+
+            // Button click listener to toggle chart type
+            $('#ChartType').click(function () {
+                currentChartType = currentChartType === 'bar' ? 'pie' : 'bar';
+
+                $.ajax({
+                    url: "/Appointments/GetMonthlyAppointmentsCount",
+                    method: 'GET',
+                    success: function (data) {
+                        renderChart(data);
+                    }
+                });
+            });
+        });
+
+
+        // 1. get table data
+        function getTableData() {
+            let data = [];
+            $('#dataTables tbody tr').each(function () {
+                let row = $(this);
+                let rowData = {
+                    ClinicName: row.find('td:eq(0)').text(),
+                    StartTime: row.find('td:eq(1)').text(),
+                    EndTime: row.find('td:eq(2)').text()
+                };
+                data.push(rowData);
+            });
+            return data;
+        }
+
+        // 2. download function
+        function download(filename, data, type) {
+            let blob = new Blob([data], { type: type });
+            let link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function exportData(format) {
+            let data = getTableData();
+            switch (format) {
+                case 'JSON':
+                    let jsonData = JSON.stringify(data);
+                    download('appointments.json', jsonData, 'application/json');
+                    break;
+
+                case 'TXT':
+                    let txtData = JSON.stringify(data, null, 4);
+                    download('appointments.txt', txtData, 'text/plain');
+                    break;
+
+                case 'CSV':
+                    let csvData = data.map(row => Object.values(row).join(',')).join('\n');
+                    download('appointments.csv', csvData, 'text/csv');
+                    break;
+            }
+        }
+
+        // 3. add click listener
+        $('#exportJSON').click(function () {
+            exportData('JSON');
+        });
+
+        $('#exportTxt').click(function () {
+            exportData('TXT');
+        });
+
+        $('#exportCSV').click(function () {
+            exportData('CSV');
+        });
+
+    </script>
+}
+

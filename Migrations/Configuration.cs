@@ -10,6 +10,7 @@
         public Configuration()
         {
             AutomaticMigrationsEnabled = false;
+            ContextKey = "MedManager.Models.ApplicationDbContext";
         }
 
         protected override void Seed(MedManager.Models.ApplicationDbContext context)

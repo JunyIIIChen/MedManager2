@@ -8,6 +8,9 @@ namespace MedManager
         public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {
             filters.Add(new HandleErrorAttribute());
+
+            // this is a security implementation
+            filters.Add(new RequireHttpsAttribute());
         }
     }
 }

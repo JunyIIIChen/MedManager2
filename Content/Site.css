@@ -18,3 +18,38 @@ select,
 textarea {
     max-width: 280px;
 }
+
+#container {
+    height: 500px;
+    display: flex;
+}
+
+#sidebar {
+    flex-basis: 15rem;
+    flex-grow: 1;
+    padding: 1rem;
+    max-width: 30rem;
+    height: 100%;
+    box-sizing: border-box;
+    overflow: auto;
+}
+
+#map {
+    flex-basis: 0;
+    flex-grow: 4;
+    height: 100%;
+}
+
+
+#map {
+    flex: auto;
+}
+
+#sidebar {
+    flex: 0 1 auto;
+    padding: 0;
+}
+
+    #sidebar > div {
+        padding: 0.5rem;
+    }

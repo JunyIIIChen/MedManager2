@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace MedManager.Models
@@ -8,6 +9,20 @@ namespace MedManager.Models
         [Required]
         [Display(Name = "Email")]
         public string Email { get; set; }
+
+        // add name and dob
+        [Required]
+        [Display(Name = "Frist Name")]
+        public string FirstName { get; set; }
+
+        [Required]
+        [Display(Name = "Last Name")]
+        public string LastName { get; set; }
+
+        [Required]
+        [Display(Name = "Date of Birth")]
+        public DateTime BirthDate { get; set; }
+
     }
 
     public class ExternalLoginListViewModel
@@ -79,6 +94,19 @@ namespace MedManager.Models
         [Display(Name = "Confirm password")]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
+
+        // add name and dob
+        [Required]
+        [Display(Name = "Frist Name")]
+        public string FirstName { get; set; }
+
+        [Required]
+        [Display(Name = "Last Name")]
+        public string LastName { get; set; }
+
+        [Required]
+        [Display(Name = "Date of Birth")]
+        public DateTime BirthDate { get; set; }
     }
 
     public class ResetPasswordViewModel

@@ -38,5 +38,10 @@ namespace MedManager.Models
         {
             return new ApplicationDbContext();
         }
+
+        public DbSet<Clinic> Clinics { get; set; }
+        public DbSet<Appointment> Appointments { get; set; }
+
+        public DbSet<Rating> Ratings { get; set; }
     }
 }

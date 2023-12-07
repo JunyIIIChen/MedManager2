@@ -54,15 +54,15 @@ namespace MedManager
             //   consumerKey: "",
             //   consumerSecret: "");
 
-            //app.UseFacebookAuthentication(
-            //   appId: "",
-            //   appSecret: "");
+            app.UseFacebookAuthentication(
+               appId: "266928279135693",
+               appSecret: "465e7e190953ddfcee0b4108711a8fac");
 
-            //app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
-            //{
-            //    ClientId = "",
-            //    ClientSecret = ""
-            //});
+            app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
+            {
+                ClientId = "1030790601584-bmiuvrjhogvitq0qvib6u5p8qjn92lb6.apps.googleusercontent.com",
+                ClientSecret = "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"
+            });
         }
     }
 }

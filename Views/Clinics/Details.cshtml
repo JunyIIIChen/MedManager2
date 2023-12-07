@@ -1,0 +1,186 @@
+﻿@model MedManager.Models.Clinic
+@{
+    ViewBag.Title = "Details";
+    var ClinicId = ViewBag.ClinicId;
+}
+
+<h2>Rating&Bokking</h2>
+
+<!-- Clinic rating-->
+<div>
+    <h4>Clinic</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.AverageRating) (0-5)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.AverageRating)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ClinicName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ClinicName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ClinicAddress)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ClinicAddress)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ClinicPhone)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ClinicPhone)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ClinicDescription)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ClinicDescription)
+        </dd>
+    </dl>
+</div>
+
+@if (User.IsInRole("patient"))
+{
+    <h4>Rate this Clinic</h4>
+
+    using (Html.BeginForm("RateClinic", "Clinics", FormMethod.Post))
+    {
+        @Html.HiddenFor(model => model.Id)
+        <div class="form-horizontal">
+            <div class="form-group">
+                <label for="Rate" class="control-label col-md-2">Rate</label>
+                <div id="rateYo" style="padding-left: 15px;"></div>
+                <input type="hidden" name="Rate" id="ratingValue" value="0" />
+            </div>
+        </div>
+
+        <div class=" form-group">
+            <label for="Comment" class="control-label col-md-2">Comment</label>
+            <textarea id="Comment" rows="4" cols="70" class="form-control"></textarea>
+        </div>
+
+        <div class="form-group">
+            <input type="Submit" value="Save" class="btn btn-default" />
+        </div>
+    }
+}
+
+<div id="calendar"></div>
+
+<p>
+    @Html.ActionLink("Back to List", "Index")
+</p>
+
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/calendar")
+
+@section scripts{
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/rateYo/2.3.2/jquery.rateyo.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/rateYo/2.3.2/jquery.rateyo.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $("#rateYo").rateYo({
+                rating: 0,
+                fullStar: true,
+                onSet: function (rating, rateYoInstance) {
+                    $("#ratingValue").val(rating);
+                }
+            });
+        });
+    </script>
+
+    <script>
+    $(document).ready(function() {
+    // initail the calendar
+    $.ajax({
+        type: "GET",
+        url: "/Clinics/GetClinicAppointments/@ClinicId",
+        success: function(data) {
+            var events = [];
+            $.each(data, function(i, v) {
+                events.push({
+                    title: 'Booked',
+                    start: moment(v.StartTime),
+                    end: moment(v.EndTime),
+                    color: '#ff0000', // change the booked appointment to red
+                    constraint: 'businessHours' // booked only in bussiness hour
+                });
+            });
+
+
+            $('#calendar').fullCalendar({
+                header: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'month,agendaWeek,agendaDay'
+                },
+                defaultView: 'agendaWeek', // agenda as week
+                slotDuration: '00:30:00', // time slots set for 30mins
+                businessHours: { //
+                    start: '09:00', // start time
+                    end: '18:00',   // end time
+                    daysOfWeek: [1, 2, 3, 4, 5] // from moneday to friday
+                },
+                events: events,
+                eventOverlap: false, // avoid overlap of the time slot
+                selectable: true, // allow user to select time
+                selectConstraint: 'businessHours', // make sure user can only select witnin bussness hour
+
+
+                select: function(start, end) {
+                    var title = "New Booking";
+                    var clinicId = "@ClinicId"; // get ClinicId from clinic controller
+
+                    if (confirm("Are you sure you want to book this slot?")) {
+                        $.ajax({
+                            type: "POST",
+                            url: "/Clinics/AddAppointment",
+                            data: {
+                                StartTime: start.format(),
+                                EndTime: end.format(),
+                                ClinicId: clinicId
+                            },
+                            success: function(response) {
+                                if(response.success) {
+                                    $('#calendar').fullCalendar('renderEvent',
+                                        {
+                                            title: title,
+                                            start: start,
+                                            end: end,
+                                            constraint: 'businessHours'
+                                        },
+                                        true
+                                    );
+                                } else {
+                                    alert('Error: ' + response.message);
+                                }
+                            }
+                        });
+                    }
+                    $('#calendar').fullCalendar('unselect');
+                }
+            });
+        }
+    });
+});
+
+    </script>
+}

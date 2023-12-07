@@ -1,0 +1,96 @@
+﻿@model MedManager.Models.Appointment
+
+@{
+    ViewBag.Title = "Create";
+}
+
+<h2>Create</h2>
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>Appointment</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.ClinicId, "ClinicId", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownList("ClinicId", null, htmlAttributes: new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.ClinicId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.StartTime, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.StartTime, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.StartTime, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.EndTime, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.EndTime, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.EndTime, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/datepicker")
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        // use datetimepickers
+        $('#StartTime, #EndTime').datetimepicker({
+            sideBySide: true,
+            minDate: moment(),
+            enabledHours: [9, 10, 11, 12, 13, 14, 15, 16, 17],
+            daysOfWeekDisabled: [0, 6],
+            format: 'DD-MMMM-YYYY h:mm:ss A'
+        });
+
+        // listen datetimepickers event change
+        $('#StartTime, #EndTime').on('dp.change', function () {
+            validateTime();
+        });
+
+        // validate time before submit
+        $('form').submit(function (e) {
+            if (!validateTime()) {
+                e.preventDefault();
+            }
+        });
+
+        // check if  StartTime before EndTime
+        // this is front end validation
+        function validateTime() {
+            var startTime = $('#StartTime').data("DateTimePicker").date();
+            var endTime = $('#EndTime').data("DateTimePicker").date();
+
+            if (startTime && endTime && startTime >= endTime) {
+                alert('Start time must be less than end time.');
+                return false;
+            }
+            return true;
+        }
+    });
+</script>
+}

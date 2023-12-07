@@ -1,0 +1,105 @@
+﻿@model IEnumerable<MedManager.Models.Clinic>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Index</h2>
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<div id="controls">
+    <input id="start" type="text" placeholder="Enter starting point">
+    <input id="end" type="text" placeholder="Enter destination">
+    <button onclick="calculateAndDisplayRoute()">Navigate</button>
+</div>
+<dev id="container">
+    <div id="map"></div>
+    <div id="sidebar">
+        <!-- This div will hold directions -->
+        <div id="directionsPanel"></div>
+    </div>
+</dev>
+
+
+
+
+
+<table class="table" id="dataTables">
+
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ClinicName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ClinicAddress)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ClinicPhone)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ClinicDescription)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ClinicName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ClinicAddress)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ClinicPhone)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ClinicDescription)
+                </td>
+                <td>
+                    @if (User.IsInRole("patient"))
+                    {
+                        <p>
+                            @Html.ActionLink("Rating&Booking", "Details", new { id = item.Id })
+                        </p>
+                    }
+
+                    @if (User.IsInRole("admin"))
+                    {
+                        @Html.ActionLink(" | Edit |", "Edit", new { id = item.Id })
+                        @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+
+
+
+</table>
+
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/dataTables")
+@Scripts.Render("~/bundles/map")
+
+@section scripts{
+    <script>
+        let table = new DataTable('#dataTables');
+    </script>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBK4xCeWBv-vWU30orEDAubiBPSyU72bpY&callback=initMap" async defer></script>
+
+    <style>
+        #sidebar {
+            height: 500px;
+            width: 350px;
+        }
+    </style>
+
+}

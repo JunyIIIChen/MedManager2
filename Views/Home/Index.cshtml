@@ -2,32 +2,61 @@
     ViewBag.Title = "Home Page";
 }
 
-<main>
-    <section class="row" aria-labelledby="aspnetTitle">
-        <h1 id="title">ASP.NET</h1>
-        <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-        <p><a href="https://asp.net" class="btn btn-primary btn-md">Learn more &raquo;</a></p>
-    </section>
+<style>
+    /* CSS darkmode */
+    .dark-mode {
+        background-color: #333333;
+        color: #ff9900;
+    }
+</style>
 
-    <div class="row">
-        <section class="col-md-4" aria-labelledby="gettingStartedTitle">
-            <h2 id="gettingStartedTitle">Getting started</h2>
-            <p>
-                ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-                enables a clean separation of concerns and gives you full control over markup
-                for enjoyable, agile development.
-            </p>
-            <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
-        </section>
-        <section class="col-md-4" aria-labelledby="librariesTitle">
-            <h2 id="librariesTitle">Get more libraries</h2>
-            <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-            <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
-        </section>
-        <section class="col-md-4" aria-labelledby="hostingTitle">
-            <h2 id="hostingTitle">Web Hosting</h2>
-            <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-            <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
-        </section>
+<div>
+    <h1>MedManager</h1>
+    <button id="darkModeToggle">Dark Mode</button>
+
+    <p>
+        <picture>
+            <source media="(max-width:639px)" srcset="~/Images/healthcover-320.jpg" />
+            <source media="(max-width:1279px)" srcset="~/Images/healthcover-640.jpg" />
+            <source media="(max-width:2560px)" srcset="~/Images/healthcover-1280.jpg" />
+
+            <img src="~/Images/healthcover-320.jpg"
+                 alt="Differemt resolution" />
+        </picture>
+
+    </p>
+</div>
+
+
+
+<div class="row">
+    <div class="col-md-4">
+        <h2>Getting Started</h2>
+        <p>
+            MedMagner is a medical appointment scheduling software. Through this program, 
+            you can easily book medical consultations and view the locations of our partnered hospitals.
+            It helps you manage your health more effectively.
+        </p>
+        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
     </div>
-</main>
+    <div class="col-md-4">
+        <h2>Why Examination</h2>
+        <p>Ultrasound imaging, or sonography, uses high-frequency sound waves to visualize internal structures. It's safe, radiation-free, and versatile, making it essential for diagnosing various medical conditions.</p>
+    </div>
+    <div class="col-md-4">
+        <h2>Contact Us</h2>
+        <p>If you have any questions, please contact the administrator.</p>
+        </div>
+</div>
+
+@section Scripts{
+    <script>
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const body = document.body;
+
+        darkModeToggle.addEventListener('click', function () {
+            body.classList.toggle('dark-mode');
+        });
+    </script>
+
+}
